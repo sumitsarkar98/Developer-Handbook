@@ -1,0 +1,186 @@
+================================================================
+LARAVEL PROJECT SETUP — QUICK REFERENCE
+Machine: SUMIT's Windows setup (Herd + MySQL + Node 22)
+================================================================
+
+ONE-TIME SETUP (already done — reference only)
+----------------------------------------------------------------
+- Herd installed: PHP 8.4.26, Composer 2.10.2
+- Laravel installer 5.32.0 (permanent fix in place)
+- MySQL 8.0.42 running, root password set
+- Node 22.17.1 / npm 11.17.0 untouched (MERN safe)
+- Global Composer home initialized
+
+================================================================
+FRESH LARAVEL PROJECT — FULL SEQUENCE
+================================================================
+
+Step 1 — Go to your Laravel workspace
+----------------------------------------------------------------
+cd D:\Developer\Laravel
+
+
+Step 2 — Create the project
+----------------------------------------------------------------
+laravel new project-name
+
+Replace "project-name" with your project name.
+Rules: lowercase, hyphens or underscores, no spaces.
+Example:  laravel new blog-api
+
+Prompts you will see:
+
+  Prompt                                          Answer
+  ----------------------------------------------  ---------
+  Do you want to use a starter kit?               no
+  Which frontend stack?                           blade
+  Would you like to run the default migrations?   yes
+  Testing framework                               pest
+  Which AI agents to configure?                   pick one or Ctrl+C
+
+If it asks for DB credentials during install:
+  Host:      127.0.0.1
+  Port:      3306
+  Database:  <your database name>
+  Username:  root
+  Password:  <your MySQL root password>
+
+
+Step 3 — Enter the project folder
+----------------------------------------------------------------
+cd project-name
+
+
+Step 4 — Create the MySQL database
+----------------------------------------------------------------
+mysql -u root -p -e "CREATE DATABASE project_name CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+
+Note: use underscores, not hyphens, for DB names.
+Example: project "blog-api"  ->  database "blog_api"
+
+
+Step 5 — Configure .env for MySQL (if not auto-done)
+----------------------------------------------------------------
+notepad .env
+
+Set these lines:
+
+  DB_CONNECTION=mysql
+  DB_HOST=127.0.0.1
+  DB_PORT=3306
+  DB_DATABASE=project_name
+  DB_USERNAME=root
+  DB_PASSWORD=your_mysql_root_password
+
+Save and close.
+
+
+Step 6 — Clear config and run migrations
+----------------------------------------------------------------
+php artisan config:clear
+php artisan migrate
+
+For a clean slate (drops all tables):
+php artisan migrate:fresh
+
+
+Step 7 — Start developing
+----------------------------------------------------------------
+composer run dev
+
+This starts three things concurrently:
+  - php artisan serve        -> http://127.0.0.1:8000
+  - php artisan queue:listen -> background jobs
+  - npm run dev              -> Vite hot-reload
+
+Open http://127.0.0.1:8000 in your browser.
+
+To stop:  Ctrl+C in that terminal.
+
+================================================================
+OPTIONAL CLEANUP — REMOVE BOOST (AI AGENT TOOLING)
+================================================================
+
+composer remove laravel/boost
+Remove-Item .claude -Recurse -Force -ErrorAction SilentlyContinue
+Remove-Item .mcp.json -Force -ErrorAction SilentlyContinue
+Remove-Item CLAUDE.md -Force -ErrorAction SilentlyContinue
+Remove-Item AGENTS.md -Force -ErrorAction SilentlyContinue
+
+Then remove the leftover boost line from composer.json:
+  notepad composer.json
+Find "post-update-cmd" and delete this line:
+  "@php artisan boost:update --ansi"
+
+================================================================
+DAILY WORKFLOW (AFTER INITIAL SETUP)
+================================================================
+
+Start working:
+  cd D:\Developer\Laravel\project-name
+  composer run dev
+
+Open browser:
+  http://127.0.0.1:8000
+
+Stop:
+  Ctrl+C
+
+================================================================
+USEFUL ARTISAN COMMANDS
+================================================================
+
+  Action                          Command
+  ------------------------------  ------------------------------------------
+  List all routes                 php artisan route:list
+  Interactive shell               php artisan tinker
+  Create controller               php artisan make:controller PostController
+  Create model + migration        php artisan make:model Post -m
+  Create migration                php artisan make:migration create_posts_table
+  Create seeder                   php artisan make:seeder PostSeeder
+  Run migrations                  php artisan migrate
+  Roll back last migration        php artisan migrate:rollback
+  Wipe DB and re-migrate          php artisan migrate:fresh
+  Wipe DB, re-migrate, seed       php artisan migrate:fresh --seed
+  Clear all caches                php artisan optimize:clear
+  Show Laravel environment        php artisan about
+  Show database details           php artisan db:show
+  Run tests                       php artisan test
+  Format code (Pint)              ./vendor/bin/pint
+
+================================================================
+ONE-SHOT REFERENCE (COPY-PASTE FOR A NEW PROJECT)
+================================================================
+
+cd D:\Developer\Laravel
+laravel new blog
+cd blog
+mysql -u root -p -e "CREATE DATABASE blog CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;"
+notepad .env
+php artisan config:clear
+php artisan migrate
+composer run dev
+
+Then open:  http://127.0.0.1:8000
+
+================================================================
+OPTIONAL — HERD .TEST DOMAINS (instead of php artisan serve)
+================================================================
+
+For each project, one time:
+
+  1. Open Herd dashboard
+  2. Left sidebar -> Sites -> Add Site
+  3. Point to D:\Developer\Laravel\project-name
+  4. Save
+  5. Visit http://project-name.test
+
+With Herd serving, you don't need "composer run dev" for plain
+Blade work. Run "npm run dev" only when editing CSS/JS.
+
+For learning: stick with "composer run dev" and http://127.0.0.1:8000
+— it shows you what each piece does.
+
+================================================================
+END OF FILE
+================================================================
